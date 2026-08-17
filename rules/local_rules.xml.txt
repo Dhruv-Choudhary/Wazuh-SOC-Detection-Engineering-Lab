@@ -1,0 +1,32 @@
+<group name="sysmon,windows,">
+  <!-- Rule 100002: Detects Obfuscated PowerShell & Execution Policy Bypass -->
+  <rule id="100002" level="10">
+    <if_group>sysmon_event1</if_group>
+    <field name="win.eventdata.image" type="pcre2">(?i)powershell\.exe</field>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)-enc|ExecutionPolicy\s+Bypass</field>
+    <description>Suspicious PowerShell Execution with Encoded Command or Bypass</description>
+    <mitre>
+      <id>T1059.001</id>
+    </mitre>
+  </rule>
+</group>
+
+<group name="windows,authentication,">
+  <!-- Rule 100010: Base Rule for Single Windows Logon Failure -->
+  <rule id="100010" level="5">
+    <if_sid>60122</if_sid>
+    <description>Windows: Logon failure detected (Bad Password)</description>
+    <mitre>
+      <id>T1110.001</id>
+    </mitre>
+  </rule>
+
+  <!-- Rule 100011: Frequency Correlation for Brute-Force Password Attacks -->
+  <rule id="100011" level="10" frequency="4" timeframe="60">
+    <if_matched_sid>100010</if_matched_sid>
+    <description>Potential Password Brute-Force Attack Detected (Multiple Logon Failures)</description>
+    <mitre>
+      <id>T1110.001</id>
+    </mitre>
+  </rule>
+</group>
